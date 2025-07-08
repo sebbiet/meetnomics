@@ -587,6 +587,39 @@
         </div>
     </div>
     
+    <!-- Privacy Drawer -->
+    <div class="privacy-drawer-overlay" id="privacy-drawer-overlay"></div>
+    <div class="privacy-drawer" id="privacy-drawer">
+        <div class="privacy-drawer-content">
+            <div class="privacy-header">
+                <h3>🔒 A Privacy Poem, Just for You 🎭</h3>
+                <button class="privacy-refresh" id="privacy-refresh" aria-label="Get a new privacy poem">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 10C17 13.866 13.866 17 10 17C7.41479 17 5.17669 15.5194 4.12398 13.3457M3 10C3 6.13401 6.13401 3 10 3C12.5852 3 14.8233 4.48064 15.876 6.65432M3 15V13.3457H4.12398M15.876 6.65432V5H14.2317" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    New poem
+                </button>
+            </div>
+            
+            <div class="privacy-poem" id="privacy-poem">
+                <div class="poem-content" id="poem-content">
+                    <!-- Poem will be inserted here -->
+                </div>
+                <div class="poem-decoration">
+                    <span class="floating-emoji" style="animation-delay: 0s">📊</span>
+                    <span class="floating-emoji" style="animation-delay: 1s">👀</span>
+                    <span class="floating-emoji" style="animation-delay: 2s">🎉</span>
+                    <span class="floating-emoji" style="animation-delay: 3s">🔐</span>
+                </div>
+            </div>
+            
+            <div class="privacy-footer">
+                <p class="privacy-tldr">TL;DR: We count visitors to see how awesome we are. No creepy stuff. Promise! 🤝</p>
+                <button class="btn-privacy-close" id="close-privacy" aria-label="Close privacy information">Got it, poet!</button>
+            </div>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>

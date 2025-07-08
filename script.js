@@ -313,6 +313,9 @@ const warningView = document.getElementById('warning-view');
 const toolsView = document.getElementById('tools-view');
 const successView = document.getElementById('success-view');
 
+// Privacy drawer elements (declared early for escape key handler)
+let privacyDrawer, privacyDrawerOverlay;
+
 function showDrawer() {
     drawer.classList.add('active');
     drawerOverlay.classList.add('active');
@@ -340,10 +343,14 @@ function hideDrawer() {
     sendInviteBtn.focus();
 }
 
-// Add escape key handler for drawer
+// Add escape key handler for drawers
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && drawer.classList.contains('active')) {
-        hideDrawer();
+    if (e.key === 'Escape') {
+        if (drawer.classList.contains('active')) {
+            hideDrawer();
+        } else if (privacyDrawer.classList.contains('active')) {
+            hidePrivacyDrawer();
+        }
     }
 });
 
@@ -762,13 +769,149 @@ if (cookieSettingsLink) {
     });
 }
 
+// Privacy Drawer functionality
+privacyDrawer = document.getElementById('privacy-drawer');
+privacyDrawerOverlay = document.getElementById('privacy-drawer-overlay');
+const poemContent = document.getElementById('poem-content');
+const privacyRefreshBtn = document.getElementById('privacy-refresh');
+const closePrivacyBtn = document.getElementById('close-privacy');
+
+// Privacy poems collection
+const privacyPoems = [
+    {
+        type: 'haiku',
+        content: `Counting visitors,<br>
+                 No names, just happy numbers,<br>
+                 Your secrets are safe.`
+    },
+    {
+        type: 'limerick',
+        content: `There once was a site tracking views,<br>
+                 Just numbers, no personal clues,<br>
+                 We count every click,<br>
+                 But nothing too slick,<br>
+                 Just seeing who loves to peruse!`
+    },
+    {
+        type: 'modern',
+        content: `We track, but we're not creepy,<br>
+                 Just counting sheep (visitors) to stay sleepy,<br>
+                 Page views and button clicks,<br>
+                 That's all our analytics picks,<br>
+                 Your data stays yours to keep-y!`
+    },
+    {
+        type: 'haiku',
+        content: `Analytics here,<br>
+                 Like counting stars, not stalking,<br>
+                 Just pure visitor joy.`
+    },
+    {
+        type: 'rhyme',
+        content: `Roses are red,<br>
+                 Violets are blue,<br>
+                 We count our visitors,<br>
+                 But we don't track YOU!`
+    },
+    {
+        type: 'modern',
+        content: `Dear visitor, please don't stress,<br>
+                 Our tracking is minimal, we confess,<br>
+                 Just tallying views to impress,<br>
+                 The VCs who fund this beautiful mess!`
+    },
+    {
+        type: 'haiku',
+        content: `Numbers dancing high,<br>
+                 Anonymous and carefree,<br>
+                 Privacy intact.`
+    },
+    {
+        type: 'limerick',
+        content: `A tracker that's not very nosy,<br>
+                 Makes analytics seem quite cosy,<br>
+                 We just count the crowd,<br>
+                 Nothing creepy allowed,<br>
+                 Your browsing stays private and rosy!`
+    },
+    {
+        type: 'modern',
+        content: `We're watching... your page views! 👀<br>
+                 Not your shopping, not your news,<br>
+                 Just simple stats to make us smile,<br>
+                 "Look mum, visitors!" once in a while.`
+    },
+    {
+        type: 'haiku',
+        content: `GTM loads light,<br>
+                 Only with your permission,<br>
+                 Consent is our way.`
+    }
+];
+
+let currentPoemIndex = Math.floor(Math.random() * privacyPoems.length);
+
+function showPrivacyPoem() {
+    const poem = privacyPoems[currentPoemIndex];
+    poemContent.innerHTML = poem.content;
+    poemContent.className = `poem-content ${poem.type}`;
+    
+    // Animate the change
+    poemContent.style.animation = 'none';
+    setTimeout(() => {
+        poemContent.style.animation = 'fadeInPoem 0.5s ease';
+    }, 10);
+}
+
+function showPrivacyDrawer() {
+    privacyDrawer.classList.add('active');
+    privacyDrawerOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    showPrivacyPoem();
+    
+    // Focus management
+    setTimeout(() => closePrivacyBtn.focus(), 100);
+}
+
+function hidePrivacyDrawer() {
+    privacyDrawer.classList.remove('active');
+    privacyDrawerOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
 // Handle privacy link
 if (privacyLink) {
     privacyLink.addEventListener('click', (e) => {
         e.preventDefault();
-        showNotification('Privacy: We only track page views and button clicks. No personal data is collected.', 'info');
+        showPrivacyDrawer();
+        
+        // Track privacy drawer opened
+        pushAnalyticsEvent('privacy_drawer_opened', {
+            'poem_shown': privacyPoems[currentPoemIndex].type
+        });
     });
 }
+
+// Handle refresh poem button
+privacyRefreshBtn.addEventListener('click', () => {
+    currentPoemIndex = (currentPoemIndex + 1) % privacyPoems.length;
+    showPrivacyPoem();
+    
+    // Track poem refresh
+    pushAnalyticsEvent('privacy_poem_refreshed', {
+        'new_poem_type': privacyPoems[currentPoemIndex].type
+    });
+});
+
+// Handle close button
+closePrivacyBtn.addEventListener('click', hidePrivacyDrawer);
+privacyDrawerOverlay.addEventListener('click', hidePrivacyDrawer);
+
+// Prevent drawer close when clicking inside
+privacyDrawer.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+
 
 // Check consent on load
 checkConsent();
