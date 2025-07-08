@@ -993,13 +993,19 @@ pushAnalyticsEvent('page_view', {
 // Confetti celebration function
 function launchConfetti() {
     const confettiContainer = document.getElementById('confetti-container');
+    
+    if (!confettiContainer) {
+        return;
+    }
+    
     const confettiCount = isMobile() ? 50 : 100; // Fewer particles on mobile
     const colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6'];
     
     // Create confetti pieces
-    for (let i = 0; i < confettiCount; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = `confetti-piece ${colors[Math.floor(Math.random() * colors.length)]}`;
+    try {
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = `confetti-piece ${colors[Math.floor(Math.random() * colors.length)]}`;
         
         // Random starting position at bottom center
         const startX = window.innerWidth / 2 + (Math.random() - 0.5) * 100;
@@ -1031,7 +1037,10 @@ function launchConfetti() {
         // Random delay for staggered effect
         confetti.style.animationDelay = `${Math.random() * 0.3}s`;
         
-        confettiContainer.appendChild(confetti);
+            confettiContainer.appendChild(confetti);
+        }
+    } catch (error) {
+        // Silent error handling
     }
     
     // Clean up after animation
