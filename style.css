@@ -2093,3 +2093,302 @@ h1 {
 .confetti-piece.color-4 { background: #a78bfa; }
 .confetti-piece.color-5 { background: #fbbf24; }
 .confetti-piece.color-6 { background: #ef4444; }
+
+/* Damage Modal */
+.damage-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.damage-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.damage-modal.visible {
+    opacity: 1;
+}
+
+.damage-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 15, 27, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.damage-content {
+    position: relative;
+    background: rgba(20, 27, 45, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 3rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(59, 130, 246, 0.15);
+    animation: modalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(50px) scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.damage-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.damage-close:hover {
+    color: #e5e7eb;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.damage-phase {
+    text-align: center;
+    transition: all 0.5s ease;
+}
+
+.damage-phase.hidden {
+    display: none;
+}
+
+.damage-title {
+    font-size: 2rem;
+    color: #e5e7eb;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+/* ROI Phase Styles */
+.roi-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.roi-stat {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.roi-stat:hover {
+    background: rgba(59, 130, 246, 0.15);
+    transform: translateY(-2px);
+}
+
+.roi-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #60a5fa;
+    margin-bottom: 0.5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.roi-label {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.roi-subtitle {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+}
+
+/* Simulator Phase Styles */
+.simulator-stage {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 16px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.simulator-attendees {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    min-height: 100px;
+}
+
+.simulator-attendee {
+    width: 60px;
+    height: 60px;
+    background: rgba(59, 130, 246, 0.2);
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #60a5fa;
+    font-size: 1.125rem;
+    animation: attendeePopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.3s ease;
+}
+
+@keyframes attendeePopIn {
+    from {
+        transform: scale(0) rotate(180deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+.simulator-attendee:hover {
+    transform: scale(1.1);
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.simulator-cost {
+    text-align: center;
+}
+
+.cost-label {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.cost-amount {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #ef4444;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+    transition: all 0.3s ease;
+}
+
+.cost-per-hour {
+    color: #6b7280;
+    font-size: 1.125rem;
+    margin-top: 0.5rem;
+}
+
+.simulator-messages {
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.simulator-message {
+    color: #fbbf24;
+    font-size: 1.125rem;
+    font-weight: 500;
+    opacity: 0;
+    animation: messageFadeIn 0.5s ease forwards;
+}
+
+@keyframes messageFadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Action Button */
+.damage-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-damage-action {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-damage-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(59, 130, 246, 0.4);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .damage-content {
+        padding: 2rem;
+        width: 95%;
+    }
+    
+    .damage-title {
+        font-size: 1.5rem;
+    }
+    
+    .roi-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .roi-number {
+        font-size: 2rem;
+    }
+    
+    .simulator-stage {
+        padding: 2rem;
+    }
+    
+    .simulator-attendee {
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .cost-amount {
+        font-size: 3rem;
+    }
+    
+    .simulator-message {
+        font-size: 1rem;
+    }
+}

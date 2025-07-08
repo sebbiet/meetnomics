@@ -1093,3 +1093,239 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize
 renderAttendees();
+
+// Damage Modal Functionality
+const damageModal = document.getElementById('damage-modal');
+const damageBackdrop = document.getElementById('damage-backdrop');
+const damageClose = document.getElementById('damage-close');
+const damageAction = document.getElementById('damage-action');
+const showDamageBtn = document.querySelector('.btn-demo');
+
+// Phase elements
+const roiPhase = document.getElementById('roi-phase');
+const simulatorPhase = document.getElementById('simulator-phase');
+
+// ROI elements
+const moneySavedEl = document.getElementById('money-saved');
+const hoursReclaimedEl = document.getElementById('hours-reclaimed');
+const meetingsAvoidedEl = document.getElementById('meetings-avoided');
+
+// Simulator elements
+const simulatorAttendeesEl = document.getElementById('simulator-attendees');
+const simulatorCostEl = document.getElementById('simulator-cost');
+const simulatorMessageEl = document.getElementById('simulator-message');
+
+let currentPhase = 1;
+let simulatorInterval = null;
+let simulatorAttendees = [];
+let messageTimeout = null;
+
+// ROI Counter Animation
+function animateCounter(element, targetValue, prefix = '', suffix = '', duration = 2000) {
+    const startTime = Date.now();
+    const startValue = 0;
+    const isInteger = Number.isInteger(targetValue);
+    
+    const updateCounter = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const currentValue = startValue + (targetValue - startValue) * easeOutQuart;
+        
+        if (isInteger) {
+            element.textContent = prefix + Math.floor(currentValue).toLocaleString() + suffix;
+        } else {
+            element.textContent = prefix + currentValue.toFixed(1).toLocaleString() + suffix;
+        }
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateCounter);
+        } else {
+            element.textContent = prefix + targetValue.toLocaleString() + suffix;
+        }
+    };
+    
+    requestAnimationFrame(updateCounter);
+}
+
+// Start ROI animation
+function startROIAnimation() {
+    // Animate counters with realistic values
+    animateCounter(moneySavedEl, 487000, '$', '', 2500);
+    animateCounter(hoursReclaimedEl, 3840, '', '', 2200);
+    animateCounter(meetingsAvoidedEl, 1248, '', '', 2000);
+}
+
+// Simulator messages
+const simulatorMessages = [
+    "That's a small team meeting right there! 💸",
+    "You could buy lunch for the whole office instead! 🍕",
+    "There goes your coffee budget for the month! ☕",
+    "Congratulations, you've funded a small startup! 🚀",
+    "That's a down payment on productivity! 🏠",
+    "Your CFO just felt a disturbance in the force! 😱",
+    "Achievement unlocked: Meeting Millionaire! 🏆",
+    "Plot twist: The meeting could've been an email! 📧"
+];
+
+// Add attendee to simulator
+function addSimulatorAttendee() {
+    const names = ['JD', 'SM', 'AK', 'RB', 'TC', 'LP', 'MG', 'EH', 'DW', 'KJ'];
+    const name = names[simulatorAttendees.length % names.length];
+    const rate = getRandomHourlyRate();
+    
+    const attendee = document.createElement('div');
+    attendee.className = 'simulator-attendee';
+    attendee.textContent = name;
+    attendee.title = `$${rate}/hour`;
+    
+    simulatorAttendeesEl.appendChild(attendee);
+    simulatorAttendees.push({ name, rate });
+    
+    // Update cost
+    const totalCost = simulatorAttendees.reduce((sum, a) => sum + a.rate, 0);
+    simulatorCostEl.textContent = '$' + totalCost.toLocaleString();
+    
+    // Show message at certain milestones
+    if (simulatorAttendees.length === 3 || 
+        simulatorAttendees.length === 6 || 
+        simulatorAttendees.length === 9 || 
+        totalCost > 500 && simulatorAttendees.length === 4 ||
+        totalCost > 1000 && simulatorAttendees.length === 7) {
+        
+        if (messageTimeout) clearTimeout(messageTimeout);
+        
+        const message = simulatorMessages[Math.floor(Math.random() * simulatorMessages.length)];
+        simulatorMessageEl.textContent = message;
+        simulatorMessageEl.style.opacity = '0';
+        
+        setTimeout(() => {
+            simulatorMessageEl.style.opacity = '1';
+        }, 100);
+        
+        messageTimeout = setTimeout(() => {
+            simulatorMessageEl.style.opacity = '0';
+        }, 3000);
+    }
+    
+    // Track analytics
+    pushAnalyticsEvent('damage_simulator_attendee_added', {
+        attendee_count: simulatorAttendees.length,
+        total_cost: totalCost
+    });
+}
+
+// Start meeting simulator
+function startMeetingSimulator() {
+    simulatorAttendees = [];
+    simulatorAttendeesEl.innerHTML = '';
+    simulatorCostEl.textContent = '$0';
+    simulatorMessageEl.textContent = '';
+    
+    // Add attendees progressively
+    let attendeeCount = 0;
+    simulatorInterval = setInterval(() => {
+        if (attendeeCount < 10) {
+            addSimulatorAttendee();
+            attendeeCount++;
+        } else {
+            clearInterval(simulatorInterval);
+            // Show final message
+            setTimeout(() => {
+                simulatorMessageEl.textContent = "And that's just ONE meeting! 🤯";
+                simulatorMessageEl.style.opacity = '1';
+            }, 1000);
+        }
+    }, 800);
+}
+
+// Show damage modal
+function showDamageModal() {
+    currentPhase = 1;
+    damageModal.classList.add('active');
+    
+    // Reset phases
+    roiPhase.classList.remove('hidden');
+    simulatorPhase.classList.add('hidden');
+    damageAction.textContent = 'Continue';
+    
+    // Small delay for animation
+    setTimeout(() => {
+        damageModal.classList.add('visible');
+        startROIAnimation();
+    }, 50);
+    
+    // Track analytics
+    pushAnalyticsEvent('damage_modal_opened');
+}
+
+// Hide damage modal
+function hideDamageModal() {
+    damageModal.classList.remove('visible');
+    
+    setTimeout(() => {
+        damageModal.classList.remove('active');
+        if (simulatorInterval) {
+            clearInterval(simulatorInterval);
+        }
+        if (messageTimeout) {
+            clearTimeout(messageTimeout);
+        }
+    }, 300);
+    
+    // Track analytics
+    pushAnalyticsEvent('damage_modal_closed', {
+        phase_reached: currentPhase
+    });
+}
+
+// Handle phase transitions
+function handleDamageAction() {
+    if (currentPhase === 1) {
+        // Transition to simulator
+        roiPhase.style.opacity = '0';
+        setTimeout(() => {
+            roiPhase.classList.add('hidden');
+            simulatorPhase.classList.remove('hidden');
+            setTimeout(() => {
+                simulatorPhase.style.opacity = '1';
+                startMeetingSimulator();
+            }, 50);
+        }, 300);
+        
+        damageAction.textContent = 'I\'ve Seen Enough 😱';
+        currentPhase = 2;
+        
+        // Track analytics
+        pushAnalyticsEvent('damage_phase_2_entered');
+    } else {
+        // Close modal
+        hideDamageModal();
+    }
+}
+
+// Event listeners
+if (showDamageBtn) {
+    showDamageBtn.addEventListener('click', showDamageModal);
+}
+
+if (damageClose) {
+    damageClose.addEventListener('click', hideDamageModal);
+}
+
+if (damageBackdrop) {
+    damageBackdrop.addEventListener('click', hideDamageModal);
+}
+
+if (damageAction) {
+    damageAction.addEventListener('click', handleDamageAction);
+}
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && damageModal.classList.contains('active')) {
+        hideDamageModal();
+    }
+});

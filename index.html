@@ -619,6 +619,58 @@
         </div>
     </div>
     
+    <!-- Damage Modal -->
+    <div id="damage-modal" class="damage-modal">
+        <div class="damage-backdrop" id="damage-backdrop"></div>
+        <div class="damage-content">
+            <button class="damage-close" id="damage-close" aria-label="Close damage modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            
+            <!-- Phase 1: ROI Counter -->
+            <div class="damage-phase" id="roi-phase">
+                <h2 class="damage-title">Your Meeting Savings Potential</h2>
+                <div class="roi-stats">
+                    <div class="roi-stat">
+                        <div class="roi-number" id="money-saved">$0</div>
+                        <div class="roi-label">Annual Savings</div>
+                    </div>
+                    <div class="roi-stat">
+                        <div class="roi-number" id="hours-reclaimed">0</div>
+                        <div class="roi-label">Hours Reclaimed</div>
+                    </div>
+                    <div class="roi-stat">
+                        <div class="roi-number" id="meetings-avoided">0</div>
+                        <div class="roi-label">Meetings Avoided</div>
+                    </div>
+                </div>
+                <p class="roi-subtitle">Based on companies that reduced meetings by 30%</p>
+            </div>
+            
+            <!-- Phase 2: Meeting Simulator -->
+            <div class="damage-phase hidden" id="simulator-phase">
+                <h2 class="damage-title">Watch Your Meeting Costs Explode</h2>
+                <div class="simulator-stage">
+                    <div class="simulator-attendees" id="simulator-attendees"></div>
+                    <div class="simulator-cost">
+                        <div class="cost-label">Current Meeting Cost</div>
+                        <div class="cost-amount" id="simulator-cost">$0</div>
+                        <div class="cost-per-hour">/hour</div>
+                    </div>
+                </div>
+                <div class="simulator-messages">
+                    <p id="simulator-message" class="simulator-message"></p>
+                </div>
+            </div>
+            
+            <div class="damage-actions">
+                <button class="btn-damage-action" id="damage-action">Continue</button>
+            </div>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
