@@ -51,6 +51,19 @@ npx http-server
 
 3. Start adding attendees and watch your budget cry!
 
+## 🚀 Deployment
+
+### GitHub Pages
+
+The site automatically deploys to GitHub Pages when you push to the `main` branch:
+
+1. Go to your repository Settings → Pages
+2. Under "Build and deployment", set source to "GitHub Actions"
+3. Push to main branch - the workflow will automatically deploy your site
+4. Your site will be available at `https://[username].github.io/[repository-name]/`
+
+That's it! The included GitHub workflow handles everything automatically.
+
 ## 🎨 Technology Stack
 
 - **Frontend**: Vanilla HTML, CSS, JavaScript
