@@ -556,7 +556,27 @@ document.querySelectorAll('.footer-link, .footer-cta-button').forEach(link => {
             e.preventDefault();
             const target = document.querySelector(href);
             if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
+                // Calculate the target position accounting for header
+                const headerHeight = document.querySelector('header.header').offsetHeight;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                
+                // Disable observer temporarily to prevent conflicts
+                if (statsObserver && footerStats) {
+                    statsObserver.unobserve(footerStats);
+                }
+                
+                // Scroll to the target
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Re-enable observer after scrolling is complete
+                setTimeout(() => {
+                    if (statsObserver && footerStats) {
+                        statsObserver.observe(footerStats);
+                    }
+                }, 1000);
             }
         }
     });
@@ -587,7 +607,11 @@ const observerOptions = {
     rootMargin: '0px'
 };
 
-const statsObserver = new IntersectionObserver((entries) => {
+// Make these variables available globally for the footer link handler
+let statsObserver;
+let footerStats;
+
+statsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             const statNumber = entry.target.querySelector('.stat-number');
@@ -599,7 +623,7 @@ const statsObserver = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-const footerStats = document.querySelector('.footer-stats');
+footerStats = document.querySelector('.footer-stats');
 if (footerStats) {
     statsObserver.observe(footerStats);
 }
