@@ -312,6 +312,7 @@ function updateCost() {
 
 addPersonBtn.addEventListener('click', () => {
     let name = nameInput.value.trim();
+    const wasEmpty = !name;  // Track if input was empty
     
     // If no name entered, pick a random one
     if (!name) {
@@ -328,11 +329,14 @@ addPersonBtn.addEventListener('click', () => {
         showNotification(`${name} is already in the meeting!`, 'warning');
         
         nameInput.value = '';
-        nameInput.focus();
+        nameInput.focus();  // Keep focus here since it's an error case
     } else {
         addAttendee(name);
         nameInput.value = '';
-        nameInput.focus();
+        // Only focus if user had typed something OR if on desktop
+        if (!wasEmpty || !isMobile()) {
+            nameInput.focus();
+        }
     }
 });
 
