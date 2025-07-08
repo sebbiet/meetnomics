@@ -1064,5 +1064,32 @@ window.addEventListener('resize', () => {
     }
 });
 
+// Handle CTA button smooth scrolling
+document.addEventListener('DOMContentLoaded', () => {
+    const calculateBtn = document.querySelector('.btn-calculate');
+    if (calculateBtn) {
+        calculateBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector('#calculator');
+            if (target) {
+                const headerHeight = document.querySelector('header.header').offsetHeight;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Focus on the name input after scrolling
+                setTimeout(() => {
+                    if (!isMobile()) {
+                        nameInput.focus();
+                    }
+                }, 500);
+            }
+        });
+    }
+});
+
 // Initialize
 renderAttendees();
