@@ -799,16 +799,14 @@ function checkConsent() {
     }
 }
 
-// Initialize dataLayer if it doesn't exist
+// Initialize gtag function if it doesn't exist
 window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
 
-// Push events to dataLayer (works even if GTM isn't loaded)
+// Send events to Google Analytics 4
 function pushAnalyticsEvent(eventName, parameters = {}) {
-    if (localStorage.getItem('analytics-consent') === 'accepted') {
-        window.dataLayer.push({
-            'event': eventName,
-            ...parameters
-        });
+    if (localStorage.getItem('analytics-consent') === 'accepted' && typeof gtag !== 'undefined') {
+        gtag('event', eventName, parameters);
     }
 }
 
@@ -818,7 +816,7 @@ acceptBtn.addEventListener('click', () => {
     localStorage.setItem('consent-banner-seen', 'true');
     cookieConsent.classList.remove('show');
     
-    // Reload page to load GTM
+    // Reload page to load Google Analytics
     window.location.reload();
 });
 

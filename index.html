@@ -5,18 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meetnomics - Meeting Cost Calculator</title>
     
-    <!-- Google Tag Manager -->
+    <!-- Google Analytics -->
     <script>
-    // Only load GTM if user has consented
+    // Initialize dataLayer and gtag function
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    
+    // Only load GA4 if user has consented
     if (localStorage.getItem('analytics-consent') === 'accepted' && !navigator.doNotTrack && !window.doNotTrack) {
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-PZ9H5SJ2');
+        // Load the Google Analytics script
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-23V0PYYC0G';
+        document.head.appendChild(script);
+        
+        // Configure GA4 when script loads
+        script.onload = function() {
+            gtag('js', new Date());
+            gtag('config', 'G-23V0PYYC0G', {
+                'anonymize_ip': true,
+                'cookie_flags': 'SameSite=None;Secure'
+            });
+        };
     }
     </script>
-    <!-- End Google Tag Manager -->
+    <!-- End Google Analytics -->
     
     <!-- Meta Description for SEO -->
     <meta name="description" content="Calculate the true cost of your meetings in real-time. Meetnomics helps teams visualize the financial impact of meetings with live cost tracking. Because that 2-hour planning session costs more than you think.">
@@ -43,10 +56,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="top">
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PZ9H5SJ2"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
     
     <div class="background-gradient"></div>
     <div id="confetti-container" class="confetti-container"></div>
