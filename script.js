@@ -461,6 +461,11 @@ sendAnywayBtn.addEventListener('click', () => {
 emailBestBtn.addEventListener('click', () => {
     showView(toolsView);
     
+    // Launch confetti celebration!
+    setTimeout(() => {
+        launchConfetti();
+    }, 300); // Small delay so drawer animation doesn't interfere
+    
     // Track email better clicked
     const duration = parseFloat(durationSelect.value);
     const totalCost = attendees.reduce((sum, attendee) => sum + attendee.hourlyRate, 0) * duration;
@@ -984,6 +989,56 @@ pushAnalyticsEvent('page_view', {
     'page_title': document.title,
     'page_location': window.location.href
 });
+
+// Confetti celebration function
+function launchConfetti() {
+    const confettiContainer = document.getElementById('confetti-container');
+    const confettiCount = isMobile() ? 50 : 100; // Fewer particles on mobile
+    const colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6'];
+    
+    // Create confetti pieces
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = `confetti-piece ${colors[Math.floor(Math.random() * colors.length)]}`;
+        
+        // Random starting position at bottom center
+        const startX = window.innerWidth / 2 + (Math.random() - 0.5) * 100;
+        const startY = window.innerHeight - 50;
+        
+        // Random burst trajectory
+        const angle = Math.random() * Math.PI; // 0 to 180 degrees
+        const velocity = 300 + Math.random() * 500; // Random velocity
+        const x1 = Math.cos(angle) * velocity * 0.5;
+        const y1 = -Math.sin(angle) * velocity * 0.5; // Negative for upward
+        const x2 = x1 + (Math.random() - 0.5) * 200; // Add some drift
+        const y2 = window.innerHeight + 100; // Fall below viewport
+        
+        // Set initial position
+        confetti.style.left = `${startX}px`;
+        confetti.style.bottom = '50px';
+        
+        // Set CSS variables for animation
+        confetti.style.setProperty('--x1', `${x1}px`);
+        confetti.style.setProperty('--y1', `${y1}px`);
+        confetti.style.setProperty('--x2', `${x2}px`);
+        confetti.style.setProperty('--y2', `${y2}px`);
+        
+        // Random size
+        const size = 8 + Math.random() * 8;
+        confetti.style.width = `${size}px`;
+        confetti.style.height = `${size}px`;
+        
+        // Random delay for staggered effect
+        confetti.style.animationDelay = `${Math.random() * 0.3}s`;
+        
+        confettiContainer.appendChild(confetti);
+    }
+    
+    // Clean up after animation
+    setTimeout(() => {
+        confettiContainer.innerHTML = '';
+    }, 4000);
+}
 
 // Handle window resize to adjust toast behavior
 let previousIsMobile = isMobile();
