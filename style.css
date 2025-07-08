@@ -1334,6 +1334,17 @@ h1 {
     padding-bottom: 1.5rem;
 }
 
+/* Toast Container */
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 @media (max-width: 768px) {
     h1 {
         font-size: 2.25rem;
@@ -1507,16 +1518,6 @@ h1 {
     .btn-accept, .btn-decline {
         width: 100%;
     }
-}
-
-.toast-container {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    z-index: 500;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 .toast {
