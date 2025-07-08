@@ -391,7 +391,7 @@ const testimonials = [
     { quote: "Showed this to my boss. Now we have 'no meeting Fridays'", author: "- Team Lead" },
     { quote: "Our 2-hour sprint planning was costing $3,200. Now it's 30 minutes.", author: "- Scrum Master" },
     { quote: "Cancelled our weekly all-hands. Bought a coffee machine instead. Team morale up 300%", author: "- CEO" },
-    { quote: "Realized I was in $10K worth of meetings per week. I quit. Best decision ever.", author: "- Ex-Middle Manager" },
+    { quote: "Realised I was in $10K worth of meetings per week. I quit. Best decision ever.", author: "- Ex-Middle Manager" },
     { quote: "We now charge meeting costs to project budgets. Meetings down 67%", author: "- Finance Director" },
     { quote: "My 'quick question' meetings were costing $400. Now I use Slack.", author: "- Junior Developer" },
     { quote: "Implemented meeting budgets. Suddenly everyone loves async communication.", author: "- VP Engineering" },

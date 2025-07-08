@@ -54,7 +54,7 @@ Since this is a simple static site with no build process:
 ```
 /
 ├── index.html    # Main entry point with header, calculator, integrations, FAQ
-├── script.js     # Business logic, drawer functionality, accordion behavior
+├── script.js     # Business logic, drawer functionality, accordion behaviour
 ├── style.css     # Enterprise design with blue theme and glassmorphism
 └── README.md     # Project concept description
 ```
