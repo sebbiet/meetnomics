@@ -1466,7 +1466,29 @@ h1 {
     }
     
     .hero-features {
-        font-size: 0.813rem;
+        gap: 1.25rem;
+        padding: 0 0.5rem;
+    }
+    
+    .hero-feature {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .hero-feature svg {
+        width: 24px;
+        height: 24px;
+        background: rgba(59, 130, 246, 0.1);
+        padding: 8px;
+        border-radius: 8px;
+        box-sizing: content-box;
     }
     
     .faq-question {
