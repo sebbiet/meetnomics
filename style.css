@@ -262,11 +262,20 @@ h1 {
     outline-offset: 3px;
 }
 
+.meeting-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
 .duration-selector {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex-wrap: wrap;
+    flex: 0 1 auto;
 }
 
 .duration-selector label {
@@ -291,17 +300,11 @@ h1 {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.custom-rate-section {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 .custom-rate-toggle-container {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
+    flex: 0 1 auto;
 }
 
 .toggle-switch {
@@ -364,7 +367,11 @@ h1 {
 }
 
 .custom-rate-input-container {
-    margin-left: 68px;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     animation: fadeIn 0.3s ease;
 }
 
@@ -1680,19 +1687,23 @@ h1 {
         width: 100%;
     }
     
-    .custom-rate-section {
-        margin-top: 1rem;
-        padding-top: 1rem;
+    .meeting-options {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .duration-selector {
+        width: 100%;
     }
     
     .custom-rate-toggle-container {
-        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-start;
     }
     
     .custom-rate-input-container {
-        margin-left: 0;
-        margin-top: 0.5rem;
-        width: 100%;
+        margin-top: 1rem;
     }
     
     .custom-rate-input-wrapper {
@@ -1701,6 +1712,12 @@ h1 {
     
     #custom-rate-input {
         width: 120px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .meeting-options {
+        gap: 1.5rem;
     }
 }
 
