@@ -11,6 +11,8 @@ const attendeeCountSpan = document.getElementById('attendee-count');
 
 let attendees = [];
 let activeToasts = [];
+let useCustomRate = false;
+let customHourlyRate = 150;
 
 // Mobile detection utility
 function isMobile() {
@@ -139,7 +141,7 @@ function addAttendee(name) {
     const attendee = {
         id: Date.now(),
         name: name,
-        hourlyRate: getRandomHourlyRate()
+        hourlyRate: useCustomRate ? customHourlyRate : getRandomHourlyRate()
     };
     attendees.push(attendee);
     showToast(attendee.hourlyRate, true);
@@ -150,7 +152,8 @@ function addAttendee(name) {
     pushAnalyticsEvent('attendee_added', {
         'attendee_count': attendees.length,
         'hourly_rate': attendee.hourlyRate,
-        'is_random_name': !nameInput.value.trim()
+        'is_random_name': !nameInput.value.trim(),
+        'is_custom_rate': useCustomRate
     });
 }
 
@@ -1091,7 +1094,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Custom rate toggle functionality
+const customRateToggle = document.getElementById('custom-rate-toggle');
+const customRateInputContainer = document.getElementById('custom-rate-input-container');
+const customRateInput = document.getElementById('custom-rate-input');
+
+// Load saved preferences
+function loadCustomRatePreferences() {
+    const savedUseCustomRate = localStorage.getItem('useCustomRate') === 'true';
+    const savedCustomRate = localStorage.getItem('customHourlyRate');
+    
+    if (savedCustomRate && !isNaN(parseInt(savedCustomRate))) {
+        customHourlyRate = parseInt(savedCustomRate);
+        customRateInput.value = customHourlyRate;
+    }
+    
+    if (savedUseCustomRate) {
+        useCustomRate = true;
+        customRateToggle.checked = true;
+        customRateInputContainer.style.display = 'block';
+    }
+}
+
+// Handle custom rate toggle
+customRateToggle.addEventListener('change', (e) => {
+    useCustomRate = e.target.checked;
+    localStorage.setItem('useCustomRate', useCustomRate);
+    
+    if (useCustomRate) {
+        customRateInputContainer.style.display = 'block';
+        customRateInput.focus();
+    } else {
+        customRateInputContainer.style.display = 'none';
+    }
+    
+    // Track toggle change
+    pushAnalyticsEvent('custom_rate_toggled', {
+        'enabled': useCustomRate,
+        'custom_rate': customHourlyRate
+    });
+});
+
+// Handle custom rate input
+customRateInput.addEventListener('input', (e) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0 && value <= 999) {
+        customHourlyRate = value;
+        localStorage.setItem('customHourlyRate', customHourlyRate);
+    }
+});
+
+// Prevent invalid input
+customRateInput.addEventListener('keydown', (e) => {
+    // Allow backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+        // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (e.keyCode === 65 && e.ctrlKey === true) ||
+        (e.keyCode === 67 && e.ctrlKey === true) ||
+        (e.keyCode === 86 && e.ctrlKey === true) ||
+        (e.keyCode === 88 && e.ctrlKey === true)) {
+        return;
+    }
+    // Ensure that it is a number and stop the keypress
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+        e.preventDefault();
+    }
+});
+
 // Initialize
+loadCustomRatePreferences();
 renderAttendees();
 
 // Damage Modal Functionality

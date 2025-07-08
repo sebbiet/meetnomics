@@ -141,6 +141,25 @@
                     <option value="3">3 hours</option>
                 </select>
             </div>
+            
+            <div class="custom-rate-section">
+                <div class="custom-rate-toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="custom-rate-toggle" aria-label="Toggle custom hourly rate">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <label for="custom-rate-toggle" class="toggle-label">Use custom hourly rate</label>
+                </div>
+                <div class="custom-rate-input-container" id="custom-rate-input-container" style="display: none;">
+                    <label for="custom-rate-input" class="custom-rate-label">Hourly rate per person:</label>
+                    <div class="custom-rate-input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="custom-rate-input" min="1" max="999" value="150" aria-label="Custom hourly rate">
+                        <span class="rate-suffix">/hour</span>
+                    </div>
+                    <p class="custom-rate-hint">All new attendees will use this rate instead of a random one</p>
+                </div>
+            </div>
         </div>
         
         <div class="attendees-section">
