@@ -95,6 +95,13 @@ function addAttendee(name) {
     showToast(attendee.hourlyRate, true);
     renderAttendees();
     updateCost();
+    
+    // Track attendee added
+    pushAnalyticsEvent('attendee_added', {
+        'attendee_count': attendees.length,
+        'hourly_rate': attendee.hourlyRate,
+        'is_random_name': !nameInput.value.trim()
+    });
 }
 
 function removeAttendee(id) {
@@ -105,6 +112,12 @@ function removeAttendee(id) {
     attendees = attendees.filter(a => a.id !== id);
     renderAttendees();
     updateCost();
+    
+    // Track attendee removed
+    pushAnalyticsEvent('attendee_removed', {
+        'attendee_count': attendees.length,
+        'hourly_rate': attendee ? attendee.hourlyRate : 0
+    });
 }
 
 function renderAttendees() {
@@ -202,6 +215,13 @@ function checkMilestone(totalCost) {
         }, 3500);
         
         lastMilestone = milestone;
+        
+        // Track milestone reached
+        pushAnalyticsEvent('milestone_reached', {
+            'milestone_amount': milestone,
+            'attendee_count': attendees.length,
+            'meeting_duration': parseFloat(durationSelect.value)
+        });
     } else if (totalCost < lastMilestone - 500) {
         lastMilestone = Math.floor(totalCost / 500) * 500;
     }
@@ -263,7 +283,23 @@ nameInput.addEventListener('keypress', (e) => {
     }
 });
 
-durationSelect.addEventListener('change', updateCost);
+durationSelect.addEventListener('change', () => {
+    const previousDuration = durationSelect.dataset.previousValue || '1';
+    const newDuration = durationSelect.value;
+    
+    updateCost();
+    
+    // Track duration change
+    pushAnalyticsEvent('duration_changed', {
+        'previous_duration': parseFloat(previousDuration),
+        'new_duration': parseFloat(newDuration),
+        'attendee_count': attendees.length,
+        'total_cost': attendees.reduce((sum, a) => sum + a.hourlyRate, 0) * parseFloat(newDuration)
+    });
+    
+    // Store the new value as previous for next change
+    durationSelect.dataset.previousValue = newDuration;
+});
 
 // Drawer functionality
 const drawer = document.getElementById('drawer');
@@ -329,14 +365,41 @@ sendInviteBtn.addEventListener('click', () => {
     
     drawerCostSpan.textContent = totalCost.toLocaleString();
     showDrawer();
+    
+    // Track schedule meeting clicked
+    pushAnalyticsEvent('schedule_meeting_clicked', {
+        'total_cost': totalCost,
+        'attendee_count': attendees.length,
+        'meeting_duration': duration
+    });
 });
 
 sendAnywayBtn.addEventListener('click', () => {
     showView(successView);
+    
+    // Track send anyway clicked
+    const duration = parseFloat(durationSelect.value);
+    const totalCost = attendees.reduce((sum, attendee) => sum + attendee.hourlyRate, 0) * duration;
+    
+    pushAnalyticsEvent('send_anyway_clicked', {
+        'total_cost': totalCost,
+        'attendee_count': attendees.length,
+        'meeting_duration': duration
+    });
 });
 
 emailBestBtn.addEventListener('click', () => {
     showView(toolsView);
+    
+    // Track email better clicked
+    const duration = parseFloat(durationSelect.value);
+    const totalCost = attendees.reduce((sum, attendee) => sum + attendee.hourlyRate, 0) * duration;
+    
+    pushAnalyticsEvent('email_better_clicked', {
+        'total_cost': totalCost,
+        'attendee_count': attendees.length,
+        'meeting_duration': duration
+    });
 });
 
 closeDrawerBtn.addEventListener('click', hideDrawer);
@@ -365,6 +428,14 @@ function toggleAccordion(button) {
     // Toggle current accordion
     faqItem.classList.toggle('active');
     button.setAttribute('aria-expanded', !isExpanded);
+    
+    // Track FAQ accordion interaction
+    if (!isExpanded) {
+        const questionText = button.querySelector('span').textContent;
+        pushAnalyticsEvent('faq_expanded', {
+            'question': questionText
+        });
+    }
 }
 
 // Add keyboard support for accordions
@@ -496,6 +567,7 @@ clearAllBtn.addEventListener('click', () => {
         yesBtn.addEventListener('click', () => {
             // Calculate total cost being removed
             const totalRemoved = attendees.reduce((sum, a) => sum + a.hourlyRate, 0);
+            const attendeeCount = attendees.length;
             
             // Clear all attendees
             attendees = [];
@@ -504,6 +576,12 @@ clearAllBtn.addEventListener('click', () => {
             
             // Show removal toast
             showToast(totalRemoved, false);
+            
+            // Track clear all clicked
+            pushAnalyticsEvent('clear_all_clicked', {
+                'attendees_cleared': attendeeCount,
+                'total_hourly_cost_cleared': totalRemoved
+            });
             
             // Remove confirmation toast
             confirmToast.remove();
@@ -627,6 +705,79 @@ footerStats = document.querySelector('.footer-stats');
 if (footerStats) {
     statsObserver.observe(footerStats);
 }
+
+// Cookie Consent and Analytics
+const cookieConsent = document.getElementById('cookie-consent');
+const acceptBtn = document.getElementById('accept-cookies');
+const declineBtn = document.getElementById('decline-cookies');
+const cookieSettingsLink = document.getElementById('cookie-settings');
+const privacyLink = document.getElementById('privacy-link');
+
+// Check if user has already made a choice
+function checkConsent() {
+    const consent = localStorage.getItem('analytics-consent');
+    const hasSeenBanner = localStorage.getItem('consent-banner-seen');
+    
+    // Only show banner if user hasn't seen it before and hasn't made a choice
+    if (!hasSeenBanner && !consent && !navigator.doNotTrack && !window.doNotTrack) {
+        cookieConsent.classList.add('show');
+    }
+}
+
+// Initialize dataLayer if it doesn't exist
+window.dataLayer = window.dataLayer || [];
+
+// Push events to dataLayer (works even if GTM isn't loaded)
+function pushAnalyticsEvent(eventName, parameters = {}) {
+    if (localStorage.getItem('analytics-consent') === 'accepted') {
+        window.dataLayer.push({
+            'event': eventName,
+            ...parameters
+        });
+    }
+}
+
+// Handle accept
+acceptBtn.addEventListener('click', () => {
+    localStorage.setItem('analytics-consent', 'accepted');
+    localStorage.setItem('consent-banner-seen', 'true');
+    cookieConsent.classList.remove('show');
+    
+    // Reload page to load GTM
+    window.location.reload();
+});
+
+// Handle decline
+declineBtn.addEventListener('click', () => {
+    localStorage.setItem('analytics-consent', 'declined');
+    localStorage.setItem('consent-banner-seen', 'true');
+    cookieConsent.classList.remove('show');
+});
+
+// Handle cookie settings
+if (cookieSettingsLink) {
+    cookieSettingsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        cookieConsent.classList.add('show');
+    });
+}
+
+// Handle privacy link
+if (privacyLink) {
+    privacyLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showNotification('Privacy: We only track page views and button clicks. No personal data is collected.', 'info');
+    });
+}
+
+// Check consent on load
+checkConsent();
+
+// Track page view
+pushAnalyticsEvent('page_view', {
+    'page_title': document.title,
+    'page_location': window.location.href
+});
 
 // Initialize
 renderAttendees();
