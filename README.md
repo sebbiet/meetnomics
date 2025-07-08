@@ -2,6 +2,8 @@
 
 > Because nothing says "productivity" like 12 people watching someone struggle with screen share.
 
+https://meetnomics.com/
+
 Meetnomics is a satirical meeting cost calculator that helps teams visualize the true financial impact of their meetings. Watch in horror as the dollar signs pile up with each attendee you add!
 
 ## 🎯 Features
