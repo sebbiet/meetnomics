@@ -10,6 +10,12 @@ const clearAllBtn = document.getElementById('clear-all');
 const attendeeCountSpan = document.getElementById('attendee-count');
 
 let attendees = [];
+let activeToasts = [];
+
+// Mobile detection utility
+function isMobile() {
+    return window.innerWidth <= 768;
+}
 
 const randomNames = [
     'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason', 'Isabella', 'William',
@@ -56,15 +62,37 @@ function showToast(amount, isAddition) {
         : `Removed attendee saving $${amount} per hour`;
     toast.setAttribute('aria-label', announcement);
     
+    // Track active toasts
+    activeToasts.push(toast);
+    
+    // On mobile, limit to 3 toasts
+    if (isMobile() && activeToasts.length > 3) {
+        const oldestToast = activeToasts.shift();
+        if (oldestToast && oldestToast.parentElement) {
+            oldestToast.classList.add('fade-out');
+            setTimeout(() => {
+                oldestToast.remove();
+            }, 300);
+        }
+    }
+    
     toastContainer.appendChild(toast);
     
     // Remove toast after animation
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
         toast.classList.add('fade-out');
         setTimeout(() => {
             toast.remove();
+            // Remove from active toasts array
+            const index = activeToasts.indexOf(toast);
+            if (index > -1) {
+                activeToasts.splice(index, 1);
+            }
         }, 300);
     }, 3000);
+    
+    // Store timeout ID for potential cleanup
+    toast.timeoutId = timeoutId;
 }
 
 // Generic toast function for notifications
@@ -75,14 +103,36 @@ function showNotification(message, type = 'info') {
     toast.textContent = message;
     toast.setAttribute('aria-label', message);
     
+    // Track active toasts
+    activeToasts.push(toast);
+    
+    // On mobile, limit to 3 toasts
+    if (isMobile() && activeToasts.length > 3) {
+        const oldestToast = activeToasts.shift();
+        if (oldestToast && oldestToast.parentElement) {
+            oldestToast.classList.add('fade-out');
+            setTimeout(() => {
+                oldestToast.remove();
+            }, 300);
+        }
+    }
+    
     toastContainer.appendChild(toast);
     
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
         toast.classList.add('fade-out');
         setTimeout(() => {
             toast.remove();
+            // Remove from active toasts array
+            const index = activeToasts.indexOf(toast);
+            if (index > -1) {
+                activeToasts.splice(index, 1);
+            }
         }, 300);
     }, 3000);
+    
+    // Store timeout ID for potential cleanup
+    toast.timeoutId = timeoutId;
 }
 
 function addAttendee(name) {
@@ -205,14 +255,36 @@ function checkMilestone(totalCost) {
         // Add screen reader announcement for milestone
         toast.setAttribute('aria-label', `Meeting cost milestone reached: $${milestone.toLocaleString()}`);
         
+        // Track active toasts for milestones
+        activeToasts.push(toast);
+        
+        // On mobile, limit to 3 toasts
+        if (isMobile() && activeToasts.length > 3) {
+            const oldestToast = activeToasts.shift();
+            if (oldestToast && oldestToast.parentElement) {
+                oldestToast.classList.add('fade-out');
+                setTimeout(() => {
+                    oldestToast.remove();
+                }, 300);
+            }
+        }
+        
         toastContainer.appendChild(toast);
         
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             toast.classList.add('fade-out');
             setTimeout(() => {
                 toast.remove();
+                // Remove from active toasts array
+                const index = activeToasts.indexOf(toast);
+                if (index > -1) {
+                    activeToasts.splice(index, 1);
+                }
             }, 300);
         }, 3500);
+        
+        // Store timeout ID for potential cleanup
+        toast.timeoutId = timeoutId;
         
         lastMilestone = milestone;
         
@@ -253,20 +325,7 @@ addPersonBtn.addEventListener('click', () => {
     // Check for duplicates
     if (attendees.find(a => a.name.toLowerCase() === name.toLowerCase())) {
         // Show duplicate warning toast
-        const toastContainer = document.getElementById('toast-container');
-        const warningToast = document.createElement('div');
-        warningToast.className = 'toast warning';
-        warningToast.textContent = `${name} is already in the meeting!`;
-        warningToast.setAttribute('aria-label', `Warning: ${name} is already added to the meeting`);
-        
-        toastContainer.appendChild(warningToast);
-        
-        setTimeout(() => {
-            warningToast.classList.add('fade-out');
-            setTimeout(() => {
-                warningToast.remove();
-            }, 300);
-        }, 3000);
+        showNotification(`${name} is already in the meeting!`, 'warning');
         
         nameInput.value = '';
         nameInput.focus();
@@ -920,6 +979,23 @@ checkConsent();
 pushAnalyticsEvent('page_view', {
     'page_title': document.title,
     'page_location': window.location.href
+});
+
+// Handle window resize to adjust toast behavior
+let previousIsMobile = isMobile();
+window.addEventListener('resize', () => {
+    const currentIsMobile = isMobile();
+    if (previousIsMobile !== currentIsMobile) {
+        // Clear all toasts when switching between mobile and desktop
+        activeToasts.forEach(toast => {
+            if (toast && toast.parentElement) {
+                clearTimeout(toast.timeoutId);
+                toast.remove();
+            }
+        });
+        activeToasts = [];
+        previousIsMobile = currentIsMobile;
+    }
 });
 
 // Initialize
